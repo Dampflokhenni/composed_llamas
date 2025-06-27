@@ -12,7 +12,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      # Tim: dies ist das permanente Volume das so auf deinem jetson wohnt
+      # Dies ist das permanente Volume das so auf deinem jetson wohnt
       # Syntax ist hierbei:
       # - <Verzeichnis auf Jetson>:<Verzeichnis im Container>
       # In ~/models auf dem Jetson müssen also die zu benchmarkenden Modelle als GGUF liegen

@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  llama-cpp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Orin=87, Xavier=72, Nano=53
+        - CUDA_ARCH=87
+    container_name: llama-cpp-server
+    ports:
+      - "8080:8080"
+    volumes:
+      # Tim: dies ist das permanente Volume das so auf deinem jetson wohnt
+      # Syntax ist hierbei:
+      # - <Verzeichnis auf Jetson>:<Verzeichnis im Container>
+      # In ~/models auf dem Jetson müssen also die zu benchmarkenden Modelle als GGUF liegen
+      - ~/models:/models:ro
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # Command für Serverstart mit gewünschtem Modell und Params; hier:  phi-2.Q4_K_M.gguf
+    # -m: Path zum Model (Cave: Pfad IM container)
+    # --n-gpu-layers (-ngl): Layer die auf GPU offloaded werden
+    # -c: Context size
+    command: >
+      ./server
+      -m /models/phi-2.Q4_K_M.gguf
+      --n-gpu-layers 99
+      -c 2048
+      --host 0.0.0.0
+      --port 8080
